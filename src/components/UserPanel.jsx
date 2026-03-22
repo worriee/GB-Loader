@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import TransactionsTable from './TransactionsTable';
-import './UserPanel.css';
 
-const UserPanel = ({ onLogout }) => {
-    const [transactions, setTransactions] = useState([]);
+const UserPanel = () => {
+    const [transactions, setTransactions] = useState(() => JSON.parse(localStorage.getItem('transactions')) || []);
     const [phoneNumber, setPhoneNumber] = useState('');
     const [network, setNetwork] = useState('');
     const [modeOfPayment, setModeOfPayment] = useState('');
@@ -15,11 +14,6 @@ const UserPanel = ({ onLogout }) => {
         Gcash: 'Gcash Number: 09123456789',
         Maya: 'Maya Number: 09987654321'
     };
-
-    useEffect(() => {
-        const storedTransactions = JSON.parse(localStorage.getItem('transactions')) || [];
-        setTransactions(storedTransactions);
-    }, []);
 
     const handlePaymentChange = (e) => {
         const selectedPayment = e.target.value;
@@ -67,18 +61,11 @@ const UserPanel = ({ onLogout }) => {
     };
 
     return (
-        <div className="container">
-            <div className="header">
-                <h1>Worrie</h1>
-                <div id="auth-container">
-                    <span id="user-status">User Panel</span>
-                    <button id="auth-button" onClick={onLogout}>Admin Login</button>
-                </div>
-            </div>
-            <div className="form-container">
+        <div className="w-full max-w-3xl bg-white p-5 rounded-lg shadow-lg mx-auto">
+            <div className="mb-5">
                 <form id="transaction-form" onSubmit={handleSubmit}>
-                    <div className="form-group">
-                        <label htmlFor="phone-number">Phone Number</label>
+                    <div className="mb-4">
+                        <label htmlFor="phone-number" className="block mb-1 font-bold">Phone Number</label>
                         <input
                             type="tel"
                             id="phone-number"
@@ -86,11 +73,12 @@ const UserPanel = ({ onLogout }) => {
                             value={phoneNumber}
                             onChange={(e) => setPhoneNumber(e.target.value)}
                             required
+                            className="w-full p-2.5 border border-gray-300 rounded"
                         />
                     </div>
-                    <div className="form-group">
-                        <label htmlFor="network">Network</label>
-                        <select id="network" value={network} onChange={(e) => setNetwork(e.target.value)}>
+                    <div className="mb-4">
+                        <label htmlFor="network" className="block mb-1 font-bold">Network</label>
+                        <select id="network" value={network} onChange={(e) => setNetwork(e.target.value)} className="w-full p-2.5 border border-gray-300 rounded">
                             <option value="" disabled>Select a network</option>
                             <option value="DITO">DITO</option>
                             <option value="SMART">SMART</option>
@@ -99,29 +87,30 @@ const UserPanel = ({ onLogout }) => {
                             <option value="TM">TM</option>
                         </select>
                     </div>
-                    <div className="form-group">
-                        <label htmlFor="mode-of-payment">Mode of Payment</label>
-                        <select id="mode-of-payment" value={modeOfPayment} onChange={handlePaymentChange}>
+                    <div className="mb-4">
+                        <label htmlFor="mode-of-payment" className="block mb-1 font-bold">Mode of Payment</label>
+                        <select id="mode-of-payment" value={modeOfPayment} onChange={handlePaymentChange} className="w-full p-2.5 border border-gray-300 rounded">
                             <option value="" disabled>Select a payment method</option>
                             <option value="Gcash">Gcash</option>
                             <option value="Maya">Maya</option>
                         </select>
                     </div>
-                    {paymentDetails && <div id="payment-details" className="form-group">{paymentDetails}</div>}
-                    <div className="form-group">
-                        <label htmlFor="notes">Notes</label>
+                    {paymentDetails && <div id="payment-details" className="mb-4">{paymentDetails}</div>}
+                    <div className="mb-4">
+                        <label htmlFor="notes" className="block mb-1 font-bold">Notes</label>
                         <textarea
                             id="notes"
-                            placeholder="Type the promo or gb of selected network. eg. SAYAALL99 or 1GB"
+                            placeholder="Type the amount of gb (eg. 1GB, 5GB, 10GB, etc)"
                             value={notes}
                             onChange={(e) => setNotes(e.target.value)}
+                            className="w-full p-2.5 border border-gray-300 rounded"
                         ></textarea>
                     </div>
-                    <div className="form-group">
-                        <label htmlFor="receipt">Upload Proof of Payment:</label>
-                        <input type="file" id="receipt" name="receipt" accept="image/*" onChange={(e) => setReceipt(e.target.files[0])} />
+                    <div className="mb-4">
+                        <label htmlFor="receipt" className="block mb-1 font-bold">Upload Proof of Payment:</label>
+                        <input type="file" id="receipt" name="receipt" accept="image/*" onChange={(e) => setReceipt(e.target.files[0])} className="w-full" />
                     </div>
-                    <button type="submit">Add Transaction</button>
+                    <button type="submit" className="w-full p-2.5 bg-blue-500 text-white border-none rounded cursor-pointer text-base hover:bg-blue-700">Add Transaction</button>
                 </form>
             </div>
             <TransactionsTable transactions={transactions} isAdmin={false} />

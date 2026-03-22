@@ -1,5 +1,4 @@
 import React from 'react';
-import './TransactionsTable.css';
 
 const TransactionsTable = ({ transactions, isAdmin, onStatusChange, onDelete }) => {
 
@@ -11,36 +10,36 @@ const TransactionsTable = ({ transactions, isAdmin, onStatusChange, onDelete }) 
     };
 
     return (
-        <div className="transactions-container">
-            <h2>Recent Transactions</h2>
-            <table id="transaction-table">
+        <div>
+            <h2 className="text-center mb-4">Recent Transactions</h2>
+            <table className="w-full border-collapse">
                 <thead>
                     <tr>
-                        <th>Phone Number</th>
-                        <th>Network</th>
-                        <th>Mode of Payment</th>
-                        <th>Notes</th>
-                        {isAdmin && <th>Receipt</th>}
-                        <th>Status</th>
-                        {isAdmin && <th>Action</th>}
+                        <th className="p-3 border border-gray-300 text-left bg-gray-100">Phone Number</th>
+                        <th className="p-3 border border-gray-300 text-left bg-gray-100">Network</th>
+                        <th className="p-3 border border-gray-300 text-left bg-gray-100">Mode of Payment</th>
+                        <th className="p-3 border border-gray-300 text-left bg-gray-100">Notes</th>
+                        {isAdmin && <th className="p-3 border border-gray-300 text-left bg-gray-100">Receipt</th>}
+                        <th className="p-3 border border-gray-300 text-left bg-gray-100">Status</th>
+                        {isAdmin && <th className="p-3 border border-gray-300 text-left bg-gray-100">Action</th>}
                     </tr>
                 </thead>
                 <tbody>
                     {transactions.map((transaction, index) => (
-                        <tr key={index}>
-                            <td>{isAdmin ? transaction.phoneNumber : maskPhoneNumber(transaction.phoneNumber)}</td>
-                            <td>{transaction.network}</td>
-                            <td>{transaction.modeOfPayment}</td>
-                            <td>{transaction.notes}</td>
+                        <tr key={index} className="even:bg-gray-50">
+                            <td className="p-3 border border-gray-300 text-left">{isAdmin ? transaction.phoneNumber : maskPhoneNumber(transaction.phoneNumber)}</td>
+                            <td className="p-3 border border-gray-300 text-left">{transaction.network}</td>
+                            <td className="p-3 border border-gray-300 text-left">{transaction.modeOfPayment}</td>
+                            <td className="p-3 border border-gray-300 text-left">{transaction.notes}</td>
                             {isAdmin && (
-                                <td>
+                                <td className="p-3 border border-gray-300 text-left">
                                     {transaction.receipt ? <a href={transaction.receipt} target="_blank" rel="noopener noreferrer"><img src={transaction.receipt} width="100" alt="Receipt" /></a> : ''}
                                 </td>
                             )}
-                            <td>
+                            <td className="p-3 border border-gray-300 text-left">
                                 {isAdmin ? (
                                     <select
-                                        className="status-select"
+                                        className="w-full p-1 rounded"
                                         value={transaction.status}
                                         onChange={(e) => onStatusChange(index, e.target.value)}
                                     >
@@ -53,9 +52,9 @@ const TransactionsTable = ({ transactions, isAdmin, onStatusChange, onDelete }) 
                                 )}
                             </td>
                             {isAdmin && (
-                                <td>
+                                <td className="p-3 border border-gray-300 text-left">
                                     {transaction.status === 'Completed' && (
-                                        <button onClick={() => onDelete(index)}>Delete</button>
+                                        <button onClick={() => onDelete(index)} className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Delete</button>
                                     )}
                                 </td>
                             )}

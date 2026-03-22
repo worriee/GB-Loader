@@ -1,20 +1,35 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import TransactionsTable from './TransactionsTable';
-import './AdminPanel.css';
 
-const AdminPanel = ({ onLogout }) => {
-    const [transactions, setTransactions] = useState([]);
+const AdminPanel = () => {
+    const [transactions, setTransactions] = useState(() => JSON.parse(localStorage.getItem('transactions')) || []);
 
-    useEffect(() => {
-        const storedTransactions = JSON.parse(localStorage.getItem('transactions')) || [];
-        setTransactions(storedTransactions);
-        checkCompletedTransactions(storedTransactions);
-    }, []);
-
-    const saveTransactions = (transactions) => {
+    const saveTransactions = useCallback((transactions) => {
         localStorage.setItem('transactions', JSON.stringify(transactions));
         setTransactions(transactions);
-    };
+    }, []);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            const twelveHours = 12 * 60 * 60 * 1000;
+            const now = new Date().getTime();
+
+            const transactionsToDelete = transactions.filter(transaction => {
+                if (transaction.status === 'Completed' && transaction.completedAt) {
+                    return now - transaction.completedAt > twelveHours;
+                }
+                return false;
+            });
+
+            if (transactionsToDelete.length > 0) {
+                if (window.confirm(`There are ${transactionsToDelete.length} completed transactions older than 12 hours. Do you want to delete them?`)) {
+                    const updatedTransactions = transactions.filter(t => !transactionsToDelete.includes(t));
+                    saveTransactions(updatedTransactions);
+                }
+            }
+        }, 0);
+        return () => clearTimeout(timer);
+    }, [saveTransactions, transactions]);
 
     const handleStatusChange = (index, newStatus) => {
         const updatedTransactions = [...transactions];
@@ -35,34 +50,8 @@ const AdminPanel = ({ onLogout }) => {
         }
     };
 
-    const checkCompletedTransactions = (transactions) => {
-        const twelveHours = 12 * 60 * 60 * 1000;
-        const now = new Date().getTime();
-
-        const transactionsToDelete = transactions.filter(transaction => {
-            if (transaction.status === 'Completed' && transaction.completedAt) {
-                return now - transaction.completedAt > twelveHours;
-            }
-            return false;
-        });
-
-        if (transactionsToDelete.length > 0) {
-            if (window.confirm(`There are ${transactionsToDelete.length} completed transactions older than 12 hours. Do you want to delete them?`)) {
-                const updatedTransactions = transactions.filter(t => !transactionsToDelete.includes(t));
-                saveTransactions(updatedTransactions);
-            }
-        }
-    };
-
     return (
-        <div className="container">
-            <div className="header">
-                <h1>Worrie</h1>
-                <div id="auth-container">
-                    <span id="user-status">Admin Panel</span>
-                    <button id="auth-button" onClick={onLogout}>Logout</button>
-                </div>
-            </div>
+        <div className="w-full max-w-3xl bg-white p-5 rounded-lg shadow-md mx-auto">
             <TransactionsTable
                 transactions={transactions}
                 isAdmin={true}
